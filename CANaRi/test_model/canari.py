@@ -163,11 +163,13 @@ class CANARI(CLIP):
 
             image_features = torch.mm(image_features_one, self.a) + torch.mm(image_features_two, self.b)
             print(image_features.shape)
+            print(image_features)
             
             image_features = image_features / image_features.norm(dim=-1, keepdim=True)
             
             image_sigmoid = torch.nn.Sigmoid()
             image_features = image_sigmoid(image_features)
+            print(image_features)
 
         if text is not None:
             if batch_indices is None:
