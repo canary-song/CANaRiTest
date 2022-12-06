@@ -93,8 +93,8 @@ class CANARI(CLIP):
         self.logit_scale_ai = torch.nn.Parameter(torch.log(torch.ones([]) * 100))
         self.logit_scale_at = torch.nn.Parameter(torch.log(torch.ones([]) * 100))
         # MODIFICIATION
-        self.a = torch.nn.Parameter(torch.ones(1))
-        self.b = torch.nn.Parameter(torch.ones(1))
+        self.a = torch.nn.Parameter(torch.ones([1024, 1024]))
+        self.b = torch.nn.Parameter(torch.ones([1024, 1024]))
 
         if isinstance(self.pretrained, str):
             self.load_state_dict(torch.load(self.pretrained, map_location='cpu'), strict=False)
@@ -138,6 +138,7 @@ class CANARI(CLIP):
 
         return super(CANARI, self).encode_text(text_tokens)
 
+    # MODIFICATION
     def alt_forward(self,
                 audio: Optional[torch.Tensor] = None,
                 # MODIFICATION
@@ -162,7 +163,7 @@ class CANARI(CLIP):
             print(image_features_one.shape)
             print(image_features_two.shape)
 
-            image_features = self.a * image_features_one + self.b * image_features_two
+            image_features = torch.mm(image_features_one, self.a) + torch.mm(image_features_two, self.b)
             print(image_features.shape)
             
             image_features = image_features / image_features.norm(dim=-1, keepdim=True)
