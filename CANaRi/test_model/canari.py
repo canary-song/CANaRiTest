@@ -160,13 +160,14 @@ class CANARI(CLIP):
         if image1 is not None and image2 is not None:
             image_features_one = self.encode_image(image1)
             image_features_two = self.encode_image(image2)
-            print(image_features_one.shape)
-            print(image_features_two.shape)
 
             image_features = torch.mm(image_features_one, self.a) + torch.mm(image_features_two, self.b)
             print(image_features.shape)
             
             image_features = image_features / image_features.norm(dim=-1, keepdim=True)
+            
+            image_sigmoid = torch.nn.Sigmoid()
+            image_features = image_sigmoid(image_features)
 
         if text is not None:
             if batch_indices is None:
