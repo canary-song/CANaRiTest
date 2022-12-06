@@ -159,8 +159,12 @@ class CANARI(CLIP):
         if image1 is not None and image2 is not None:
             image_features_one = self.encode_image(image1)
             image_features_two = self.encode_image(image2)
+            print(image_features_one.shape)
+            print(image_features_two.shape)
 
             image_features = self.a * image_features_one + self.b * image_features_two
+            print(image_features.shape)
+            
             image_features = image_features / image_features.norm(dim=-1, keepdim=True)
 
         if text is not None:
