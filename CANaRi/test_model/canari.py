@@ -93,8 +93,9 @@ class CANARI(CLIP):
         self.logit_scale_ai = torch.nn.Parameter(torch.log(torch.ones([]) * 100))
         self.logit_scale_at = torch.nn.Parameter(torch.log(torch.ones([]) * 100))
         # MODIFICIATION
-        self.a = torch.nn.Parameter(torch.ones([1024, 1024]))
-        self.b = torch.nn.Parameter(torch.ones([1024, 1024]))
+        self.a = torch.nn.Parameter(torch.ones([1, 1024]))
+        self.b = torch.nn.Parameter(torch.ones([1, 1024]))
+        self.image_sigmoid = torch.nn.Sigmoid()
 
         if isinstance(self.pretrained, str):
             self.load_state_dict(torch.load(self.pretrained, map_location='cpu'), strict=False)
@@ -161,14 +162,15 @@ class CANARI(CLIP):
             image_features_one = self.encode_image(image1)
             image_features_two = self.encode_image(image2)
 
-            image_features = torch.mm(image_features_one, self.a) + torch.mm(image_features_two, self.b)
+            print(image_features_one.shape)
+            image_features = torch.mul(image_features_one, self.a) + torch.mul(image_features_two, self.b)
             print(image_features.shape)
             print(image_features)
             
             image_features = image_features / image_features.norm(dim=-1, keepdim=True)
+            print(image_features)
             
-            image_sigmoid = torch.nn.Sigmoid()
-            image_features = image_sigmoid(image_features)
+            image_features = self.image_sigmoid(image_features)
             print(image_features)
 
         if text is not None:
